@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'question.dart';
 
 class QuizzBrain {
   int _questionNumber = 0;
-  List<Question> _questions = [
+  final List<Question> _questions = [
     Question('Some cats are actually allergic to humans', true),
     Question('You can lead a cow down stairs but not up stairs.', false),
     Question('Approximately one quarter of human bones are in the feet.', true),
     Question('A slug\'s blood is green.', true),
-    Question('Buzz Aldrin\'s mother\'s maiden name was \"Moon\".', true),
+    Question('Buzz Aldrin\'s mother\'s maiden name was "Moon".', true),
     Question('It is illegal to pee in the Ocean in Portugal.', true),
     Question(
         'No piece of square dry paper can be folded in half more than 7 times.',
@@ -23,7 +24,7 @@ class QuizzBrain {
     Question(
         'The total surface area of two human lungs is approximately 70 square metres.',
         true),
-    Question('Google was originally called \"Backrub\".', true),
+    Question('Google was originally called "Backrub".', true),
     Question(
         'Chocolate affects a dog\'s heart and nervous system; a few ounces are enough to kill a small dog.',
         true),
@@ -35,7 +36,7 @@ class QuizzBrain {
   List<Icon> _scoreKeeper = [];
 
   void nextQuestion() {
-    if (_questionNumber < _questions.length - 1) {
+    if (!isFinished()) {
       _questionNumber++;
     }
   }
@@ -52,8 +53,21 @@ class QuizzBrain {
     return _scoreKeeper;
   }
 
+  bool isFinished() {
+    return (_questions.length - 1) == _questionNumber ? true : false;
+  }
+
+  void reset() {
+    _questionNumber = 0;
+    _scoreKeeper.clear();
+  }
+
+  int getFinalScore() {
+    return _scoreKeeper.where((element) => element.icon == Icons.check).length;
+  }
+
   void addScore(IconData icon, Color color) {
-    if (_questionNumber < _questions.length - 1) {
+    if (!isFinished()) {
       _scoreKeeper.add(
         Icon(
           icon,

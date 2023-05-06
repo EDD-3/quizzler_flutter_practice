@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quizz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizzBrain quizzBrain = QuizzBrain();
 void main() => runApp(Quizzler());
@@ -32,15 +33,43 @@ class _QuizPageState extends State<QuizPage> {
   static const Color defaultTextColor = Colors.white;
 
   void checkAnswer({bool? userPickedAnswer}) {
-    bool correctAnswer = quizzBrain.getCorrectAnswer();
-    setState(() {
-      quizzBrain.nextQuestion();
-      if (userPickedAnswer == correctAnswer) {
-        quizzBrain.addScore(Icons.check, trueColor);
-      } else {
-        quizzBrain.addScore(Icons.close, falseColor);
-      }
-    });
+    if (quizzBrain.isFinished()) {
+      final int finalScore = quizzBrain.getFinalScore();
+      print('The quizz is finished, time to start over!');
+      setState(() {
+        Alert(
+          context: context,
+          title: "Hello!",
+          desc: "You have reached the end of the quizz. "
+              "You got $finalScore out of 12 correct answers",
+          buttons: [
+            DialogButton(
+              onPressed: () => Navigator.pop(context),
+              width: 120,
+              child: const Text(
+                "Start over",
+                style: TextStyle(
+                  color: defaultTextColor,
+                  fontSize: 20,
+                ),
+              ),
+            )
+          ],
+        ).show();
+        quizzBrain.reset();
+      });
+    } else {
+      setState(() {
+        bool correctAnswer = quizzBrain.getCorrectAnswer();
+        quizzBrain.nextQuestion();
+
+        if (userPickedAnswer == correctAnswer) {
+          quizzBrain.addScore(Icons.check, trueColor);
+        } else {
+          quizzBrain.addScore(Icons.close, falseColor);
+        }
+      });
+    }
   }
 
   @override
@@ -52,12 +81,12 @@ class _QuizPageState extends State<QuizPage> {
         Expanded(
           flex: 5,
           child: Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Center(
               child: Text(
                 quizzBrain.getQuestionText(),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 25.0,
                   color: defaultTextColor,
                 ),
