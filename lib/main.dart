@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'question.dart';
 
 void main() => runApp(Quizzler());
 
@@ -10,7 +11,7 @@ class Quizzler extends StatelessWidget {
         backgroundColor: Colors.grey.shade900,
         body: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: QuizPage(),
           ),
         ),
@@ -26,10 +27,19 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
+  List<Question> questions = [
+    Question('You can lead a cow down stairs but not up stairs.', false),
+    Question('Approximately one quarter of human bones are in the feet.', true),
+    Question('A slug\'s blood is green.', true)
+  ];
+  int questionNumber = 0;
   static const Color trueColor = Colors.green;
+  static const Color falseColor = Colors.red;
+  static const Color defaultTextColor = Colors.white;
 
   void addScore({IconData? icon, Color? color}) {
     setState(() {
+      questionNumber++;
       scoreKeeper.add(Icon(icon, color: color));
     });
   }
@@ -46,11 +56,11 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                questions[questionNumber].text,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
-                  color: Colors.white,
+                  color: defaultTextColor,
                 ),
               ),
             ),
@@ -58,20 +68,27 @@ class _QuizPageState extends State<QuizPage> {
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: trueColor,
               ),
-              child: Text(
+              child: const Text(
                 'True',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: defaultTextColor,
                   fontSize: 20.0,
                 ),
               ),
               onPressed: () {
-                addScore(icon: Icons.check, color: trueColor);
+                bool correctAnswer = questions[questionNumber].answer;
+
+                if (correctAnswer == true) {
+                  addScore(icon: Icons.check, color: trueColor);
+                } else {
+                  addScore(icon: Icons.close, color: falseColor);
+                }
+
                 //The user picked true.
               },
             ),
@@ -79,19 +96,24 @@ class _QuizPageState extends State<QuizPage> {
         ),
         Expanded(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Colors.red,
-              ),
-              child: Text(
+              style: TextButton.styleFrom(backgroundColor: falseColor),
+              child: const Text(
                 'False',
                 style: TextStyle(
                   fontSize: 20.0,
-                  color: Colors.white,
+                  color: defaultTextColor,
                 ),
               ),
               onPressed: () {
+                bool correctAnswer = questions[questionNumber].answer;
+
+                if (correctAnswer == false) {
+                  addScore(icon: Icons.check, color: trueColor);
+                } else {
+                  addScore(icon: Icons.close, color: falseColor);
+                }
                 //The user picked false.
               },
             ),
