@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'question.dart';
+import 'quizz_brain.dart';
 
+QuizzBrain quizzBrain = QuizzBrain();
 void main() => runApp(Quizzler());
 
 class Quizzler extends StatelessWidget {
@@ -26,21 +27,19 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
-  List<Icon> scoreKeeper = [];
-  List<Question> questions = [
-    Question('You can lead a cow down stairs but not up stairs.', false),
-    Question('Approximately one quarter of human bones are in the feet.', true),
-    Question('A slug\'s blood is green.', true)
-  ];
-  int questionNumber = 0;
   static const Color trueColor = Colors.green;
   static const Color falseColor = Colors.red;
   static const Color defaultTextColor = Colors.white;
 
-  void addScore({IconData? icon, Color? color}) {
+  void checkAnswer({bool? userPickedAnswer}) {
+    bool correctAnswer = quizzBrain.getCorrectAnswer();
     setState(() {
-      questionNumber++;
-      scoreKeeper.add(Icon(icon, color: color));
+      quizzBrain.nextQuestion();
+      if (userPickedAnswer == correctAnswer) {
+        quizzBrain.addScore(Icons.check, trueColor);
+      } else {
+        quizzBrain.addScore(Icons.close, falseColor);
+      }
     });
   }
 
@@ -56,7 +55,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questions[questionNumber].text,
+                quizzBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -81,14 +80,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = questions[questionNumber].answer;
-
-                if (correctAnswer == true) {
-                  addScore(icon: Icons.check, color: trueColor);
-                } else {
-                  addScore(icon: Icons.close, color: falseColor);
-                }
-
+                checkAnswer(userPickedAnswer: true);
                 //The user picked true.
               },
             ),
@@ -107,20 +99,14 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = questions[questionNumber].answer;
-
-                if (correctAnswer == false) {
-                  addScore(icon: Icons.check, color: trueColor);
-                } else {
-                  addScore(icon: Icons.close, color: falseColor);
-                }
+                checkAnswer(userPickedAnswer: false);
                 //The user picked false.
               },
             ),
           ),
         ),
         Row(
-          children: scoreKeeper,
+          children: quizzBrain.getScore(),
         )
       ],
     );
